@@ -109,6 +109,10 @@ class Tree:
         else:
             pass
         self._root = node
+        self._count = 0 # not including root
+
+    def get_count(self):
+        return self._count
 
     def get_root(self):
         return self._root
@@ -152,6 +156,7 @@ class Tree:
         # Added for testing...don't know if this method works!
         if parent_id == 'root':
             self._root.add_child(node)
+            self._count += 1
             return 1
 
         # get parent node if it exists
@@ -159,6 +164,7 @@ class Tree:
 
         if parent_node:
             parent_node.add_child(node)
+            self._count += 1
             return 1
         else:
             # parent node doesn't exist yet

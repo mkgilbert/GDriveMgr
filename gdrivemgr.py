@@ -57,29 +57,59 @@ class GDriveMgrHelper:
                 # some files have an empty parents list
                 parent_id = None
 
-            files_list.append((child_id, mime, title, parent_id))
+            files_list.append({
+                                'id': child_id, 
+                                'mime': mime, 
+                                'title': title, 
+                                'parent_id': parent_id
+                            })
             
             # logging to stdout
             total += 1
-            print("Retrieved file " + str(total) + title + " (" + mime + ")")
+            print("Retrieved file " + str(total) + ". " + title + " (" + mime + ")")
         
         return files_list
         
     def create_tree(self, folder_id):
         if folder_id is None:
-            return -1
+            return
+
+        if folder_id == 'root':
+            print("")
+            print("----------------------------------------")
+            print(" Starting to create tree from Root")
+            print("----------------------------------------")
+            print("")
+
         files_list = self._get_files_in_folder(folder_id) # tuple
-        
+       
         for f in files_list:
             # add the file to the folder with id 'folder_id'
-            new_node = Node(id=f[0], title=f[2], parent_id=f[3])
-            if folder_id == 'root':
-                self.dir_tree.add(new_node)
-            if f[1] == 'application/vnd.google-apps.folder':
+            new_node = Node(id=f['id'], 
+                            title=f['title'], 
+                            parent_id=f['parent_id'])
+            
+            result = self.dir_tree.add(new_node)
+          
+            if result == 0:
+                # parent_id was None, so it shouldn't be added
                 continue
-            else:
-                # add the file to the node
-                pass
+            elif result == -1:
+                # parent node doesn't exist yet, so go get it
+                self.create_tree(f['parent_id'])
+
+            # file is a folder that could have files in it...
+            if f['mime'] == 'application/vnd.google-apps.folder':
+                print("")
+                print("----------------------------------------")
+                print(" New folder: " + f['title'])
+                print("----------------------------------------")
+                print("")
+
+                self.create_tree(f['id'])  
+  
+        return
+                
 
     def create_files(self):
         """ Builds directory file structure based on the dir_tree """
@@ -103,6 +133,8 @@ if __name__ == '__main__':
     service = gdrive.create_service()
     gdrivehelper.set_service(service)
     gdrivehelper.create_tree("root") # this will build tree starting at root google drive directory
+    print(gdrivehelper.dir_tree)
+
     # next create the local directory Tree
     # then create the file structure - temporary for testing
     # then download all the files into their proper locations
