@@ -9,10 +9,11 @@ I am currently designing this (very) basic app more for practice than anything e
 I welcome constructive criticism. If you know of something that could be done much easier or more efficient, please let me know!
 
 ## Running Tests
-There are 2 ways to run tests at the moment:
+There are 2 ways to run tests at the moment
+
 1. Run each test directly
   * You need to be in the GDriveMgr root directory and run `python -m tests/<test_file>`
-  * You need to have the GDriveMgr folder in the $PYTHONPATH environment variable:
+  * You need to have the GDriveMgr folder in the $PYTHONPATH environment variable
   ```
   $ export PYTHONPATH=/path/to/GDriveMgr
   ```
