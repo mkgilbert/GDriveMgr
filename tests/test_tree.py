@@ -20,8 +20,8 @@ class TestTreeMethods(unittest.TestCase):
         self.t1.add(self.n3)
         self.t1.add(self.n4)
         self.t1.add(self.n5)
-        print("Tree before the test:")
-        print(self.t1)
+        #print("Tree before the test:")
+        #print(self.t1)
         
         # set up tree with only one node besides root
         self.n6 = Node('node6', '6', parent_id='root')
@@ -86,7 +86,7 @@ class TestTreeMethods(unittest.TestCase):
         t.add(n)
         n = Node(title='test2', id='2', parent_id='1')
         t.add(n)
-        print(t)
+        #print(t)
         result = t.search('2')
         self.assertEqual(result.get_id(), '2')
 
@@ -124,14 +124,14 @@ class TestTreeMethods(unittest.TestCase):
     def test_check_that_node_was_added(self):
         n = Node('test_node', id='7', parent_id='4')
         was_added = self.t1.add(n)
-        print(self.t1)
+        #print(self.t1)
         self.assertEqual(was_added, 1)
 
     def test_add_node_whose_parent_is_in_tree(self):
         """ test adding node whose parent is node4 """
         n = Node('test_node2', id='8', parent_id='4')
         was_added = self.t1.add(n) # should be 1
-        print(self.t1)
+        #print(self.t1)
         self.assertEqual(was_added, 1)
 
     def test_add_node_whose_parent_is_not_in_tree(self):

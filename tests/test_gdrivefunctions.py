@@ -33,11 +33,11 @@ class TestGdrivefunctions(unittest.TestCase):
         parent_is_root = data['parents'][0]['isRoot']
         self.assertFalse(parent_is_root)
         
-    def test_get_children_first_page_of_root_folder(self):
+    def test_get_children_of_root_folder_only_type(self):
         """ tests just getting first page results of children of root 
             Google Drive folder and making sure it's a dictionary type object"""
         children = gdrive.get_children(self.service, "root")
-        self.assertEqual(type({}), type(children)) 
+        self.assertEqual(type([]), type(children)) 
 
     def test_root_file_title_is_correct(self):
         """ make sure I got the root file id and title correct """
