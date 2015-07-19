@@ -13,9 +13,9 @@ There are 2 ways to run tests at the moment:
 1. Run each test directly
   * You need to be in the GDriveMgr root directory and run `python -m tests/<test_file>`
   * You need to have the GDriveMgr folder in the $PYTHONPATH environment variable:
-```
-$ export PYTHONPATH=/path/to/GDriveMgr
-```
+  ```
+  $ export PYTHONPATH=/path/to/GDriveMgr
+  ```
 2. Run all tests automatically
   * You cd into the tests folder and call `./run_all.sh`
 
