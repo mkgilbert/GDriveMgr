@@ -1,0 +1,7 @@
+# A real file that should be directly in the GDrive root folder
+# file name| file id                                    | parent info
+perl script|19GSi5-kmCvJ9ldwBUcqe8vhzSF8fvSgOmch-3MuOYKw|[{u'isRoot': True, u'kind': u'drive#parentReference', u'id': u'0ACKN-hr2wl1PUk9PVA', u'selfLink': u'https://www.googleapis.com/drive/v2/files/19GSi5-kmCvJ9ldwBUcqe8vhzSF8fvSgOmch-3MuOYKw/parents/0ACKN-hr2wl1PUk9PVA', u'parentLink': u'https://www.googleapis.com/drive/v2/files/0ACKN-hr2wl1PUk9PVA'}]
+
+# A real file that should have parent folders
+# file_name | file id                                   | parent info
+Project 5.iml|0ByKN-hr2wl1PeG5LTTZQb2NDaWc|[{u'isRoot': False, u'kind': u'drive#parentReference', u'id': u'0ByKN-hr2wl1PWHBxNmtqZl9HOGc', u'selfLink': u'https://www.googleapis.com/drive/v2/files/0ByKN-hr2wl1PeG5LTTZQb2NDaWc/parents/0ByKN-hr2wl1PWHBxNmtqZl9HOGc', u'parentLink': u'https://www.googleapis.com/drive/v2/files/0ByKN-hr2wl1PWHBxNmtqZl9HOGc'}]

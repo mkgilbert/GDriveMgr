@@ -1,0 +1,9 @@
+*.pyc
+*.swp
+/.credentials
+*.sql
+*.log
+*.out
+client_secret.json
+*.sqlite
+
