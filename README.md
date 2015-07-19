@@ -16,6 +16,7 @@ There are 2 ways to run tests at the moment:
   ```
   $ export PYTHONPATH=/path/to/GDriveMgr
   ```
+
 2. Run all tests automatically
   * You cd into the tests folder and call `./run_all.sh`
 
