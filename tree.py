@@ -9,7 +9,8 @@ class Node:
 
     def __init__(self, title="(no title)", 
                        id=None, 
-                       parent_id=None):
+                       parent_id=None,
+                       metadata=None):
         """
         :param: nested_level = helper for how to print the string rep-
                 resentation of the node and it's children
@@ -18,6 +19,7 @@ class Node:
         self._title = title
         self._children = Set()
         self._parent_id = parent_id
+        self._metadata = metadata
 
     def get_id(self):
         return self._id
@@ -33,6 +35,18 @@ class Node:
 
     def get_title(self):
         return self._title
+
+    def set_metadata(self, metadata):
+        self._metadata = metadata
+    
+    def get_metadata(self):
+        return self._metadata
+
+    def get_mime(self):
+        if self._metadata is not None:
+            return self._metadata['mimeType']
+        else:
+            return None
 
     def get_children(self):
         return self._children
@@ -153,7 +167,6 @@ class Tree:
         if parent_id is None:
             return 0
 
-        # Added for testing...don't know if this method works!
         if parent_id == 'root':
             self._root.add_child(node)
             self._count += 1
@@ -161,7 +174,7 @@ class Tree:
 
         # get parent node if it exists
         parent_node = self.search(parent_id)
-
+        
         if parent_node:
             parent_node.add_child(node)
             self._count += 1
