@@ -131,18 +131,21 @@ class GDriveMgrHelper:
                     continue
 
                 self.rec_download_files(child)
+            elif 'vnd.google-apps' in child.get_mime():
+                # file is a "google doc" file and can't be downloaded. Http error 400
+                continue
             else:
                 try:
-                    gdrive.download_file(self.get_service(), child.get_id(), child.get_title())
+                    gdrive.download_file(self.get_service(), 
+                                         child.get_id(), 
+                                         child.get_title())
                 except OSError as e:
                     print("Error:", e)
                     print("Failed downloading '%s'" % child.get_title())
         os.chdir('../')
 
     def download_files(self):
-        # downloads only "num_of_files" number of files
-        # this may not make any sense actually. Does this download
-        # files based on the directory structure created by the tree?
+        """ Uses dir_tree to create folders and download all files except Google Docs """
         with open('dir_tree.pickle', 'rb') as f:
             print("loading tree...")
             tree = pickle.load(f)
@@ -150,17 +153,6 @@ class GDriveMgrHelper:
         root = gdrive.GDRIVE_ROOT_DIR
         os.chdir(root)
         self.rec_download_files(tree.get_root())
-
-#        path = root
-#        curr_node = tree.get_root()
-#        while True:
-#            for node in curr_node.get_children():
-#                if node.get_mime() == 'application/vnd.google-apps.folder':
-#                    new_dir = os.path.join(path, node.get_title())
-#                    os.mkdir(new_dir)
-#                else:
-#                    gdrive.test_download_file(path, node.get_title())
-#            break
 
     def update_gdrive_dir_tree(self):
         pass
