@@ -114,9 +114,30 @@ class GDriveMgrHelper:
         return
                 
 
-    def create_files(self):
+    def rec_download_files(self, node):
         """ Builds directory file structure based on the dir_tree """
-        
+        for child in node.get_children():
+            if child.get_mime() == 'application/vnd.google-apps.folder':
+                try:
+                    os.mkdir(child.get_title())
+                except OSError as e:
+                    print("Error:", e)
+                    print("Tried to create '%s'" % child.get_title())
+                try:    
+                    os.chdir(child.get_title())
+                except OSError as e:
+                    print("Error:", e)
+                    print("Couldn't chdir to '%s'. Skipping download of this directory." % child.get_title())
+                    continue
+
+                self.rec_download_files(child)
+            else:
+                try:
+                    gdrive.download_file(self.get_service(), child.get_id(), child.get_title())
+                except OSError as e:
+                    print("Error:", e)
+                    print("Failed downloading '%s'" % child.get_title())
+        os.chdir('../')
 
     def download_files(self):
         # downloads only "num_of_files" number of files
@@ -127,18 +148,19 @@ class GDriveMgrHelper:
             tree = pickle.load(f)
         
         root = gdrive.GDRIVE_ROOT_DIR
-        path = root
-        curr_node = tree.get_root()
-        while True:
-            for node in curr_node.get_children():
-                if node.get_mime() == 'application/vnd.google-apps.folder':
-                    path = os.path.join(path, node.get_title())
-                    os.mkdir(path)
-                else:
-                    gdrive.download_file(self.get_service(),
-                                         node.get_id(),
-                                         os.path.join(path, node.get_title()))
-            break
+        os.chdir(root)
+        self.rec_download_files(tree.get_root())
+
+#        path = root
+#        curr_node = tree.get_root()
+#        while True:
+#            for node in curr_node.get_children():
+#                if node.get_mime() == 'application/vnd.google-apps.folder':
+#                    new_dir = os.path.join(path, node.get_title())
+#                    os.mkdir(new_dir)
+#                else:
+#                    gdrive.test_download_file(path, node.get_title())
+#            break
 
     def update_gdrive_dir_tree(self):
         pass
@@ -149,6 +171,7 @@ class GDriveMgrHelper:
 if __name__ == '__main__':
     gdrivehelper = GDriveMgrHelper('~') # root dir will be home
     # get authorized and create a service
+    gdrive.create_drive_root_dir()
     service = gdrive.create_service()
     gdrivehelper.set_service(service)
     #gdrivehelper.create_tree("root") # this will build tree starting at root google drive directory
@@ -163,3 +186,6 @@ if __name__ == '__main__':
     # then download all the files into their proper locations
 
     gdrivehelper.download_files() 
+    print("")
+    print("*** Finished Downloading Files ***")
+

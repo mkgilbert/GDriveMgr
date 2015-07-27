@@ -57,10 +57,23 @@ def get_credentials():
 def create_drive_root_dir():
     """ Simply creates directory in /home/$USER called 'Google_Drive'"""
     if not os.path.exists(GDRIVE_ROOT_DIR):
-        os.mkdirs(GDRIVE_ROOT_DIR)
+        os.mkdir(GDRIVE_ROOT_DIR)
     
-     
-def download_file(service, file_id, local_fd):
+def print_file_content(service, file_id):
+    try:
+        print(service.files().get_media(fileId=file_id).execute())
+    except errors.HttpError, error:
+        print "Error %s" % error
+
+def test_download_file(path, file_name):
+    original_path = os.getcwd()
+    print("original path is %s" % original_path)
+    os.chdir(path)
+    print("changing path to %s" % path)
+    os.chdir(original_path)
+    return
+
+def download_file(service, file_id, file_name):
     """
     Download a Drive file's content to local filesystem
     
@@ -70,8 +83,22 @@ def download_file(service, file_id, local_fd):
         local_fd: io.Base or file object, the stream that Drive file's contents
             will be written to.
     """
-    request = service.files().get_media(fileId=file_id)
-    media_request = http.MediaIoBaseDownload(local_fd, request)
+    files = [ f for f in os.listdir('.') if os.path.isfile(os.path.join('.', f)) ]
+    if file_name in files:
+        raise OSError("File name '%s' already exists. Skipping download" % file_name)
+        return
+    else:
+        try:
+            new_file = open(file_name, 'wb')
+            request = service.files().get_media(fileId=file_id)
+            media_request = http.MediaIoBaseDownload(fd=new_file, request=request)
+        except (OSError, IOError) as e:
+            print("Error:", e)
+            print("Failed creating file '%s'" % file_name)
+            return
+
+    path = os.getcwd()
+    print("Begin downloading %s" % os.path.join(path, file_name))
 
     while True:
         try:

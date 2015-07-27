@@ -1,6 +1,7 @@
 """ Testing the gdrivefunctions script that handles talking to the API """
 import unittest
 import os
+import pickle
 
 from tree import Tree, Node
 import gdrivefunctions as gdrive
@@ -49,6 +50,19 @@ class TestGdrivefunctions(unittest.TestCase):
         data = gdrive.get_file_metadata(self.service, self.nested_file_id)
         self.assertEqual(data['title'], self.nested_file_title)
         
+    def test_download_file_using_pickled_file(self):
+        """ make sure downloading files is working using the pickled tree """
+        #os.chdir('../')
+        with open('dir_tree.pickle', 'rb') as f:
+            print("loading pickled tree...")
+            t = pickle.load(f)
+        #os.chdir('tests')
+        nodes = t.get_root().get_children()
+        node = next(iter(nodes)) # nodes are a Set(), so have to do this weird thing
+        file_name = node.get_title()
+        file_id = node.get_id()
+        gdrive.download_file(self.service, file_id, file_name)
+        self.assertTrue(file_name in os.listdir("."))
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestGdrivefunctions)
