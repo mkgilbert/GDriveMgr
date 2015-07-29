@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 from __future__ import absolute_import
 
@@ -18,7 +18,7 @@ class GDriveMgrHelper:
     """
 
     def __init__(self, root_dir):
-        # make root_dir a node to build tree off of
+        """:param: root_dir = a node to build tree off of"""
         # initialize directory Tree structure
         self.dir_tree = Tree()
         # this will be initialized in main where we get credentials and stuff
@@ -33,9 +33,13 @@ class GDriveMgrHelper:
         return self._service
 
     def _get_files_in_folder(self, folder_id):
-        """ Creates local gdrive directory tree using Tree class """
-        # need to iterate through all files in GDrive        
-        # just grab the root for now and see what happens
+        """ 
+        Gets the metadata for all the children inside a Google Drive folder
+        
+        :param: folder_id = the Google Drive id of a folder
+
+        :return: list of dicts that have all the file metadata
+        """
         children_ids = gdrive.get_children(self.get_service(), folder_id)
         total = 0
         files_list = []
@@ -73,6 +77,12 @@ class GDriveMgrHelper:
         return files_list
         
     def create_tree(self, folder_id):
+        """
+        Generate a Tree object using file metadata from all of the files in
+        Google Drive. then save it as a pickled object.
+
+        :param: folder_id = Google Drive id of a folder
+        """
         if folder_id is None:
             return
 
@@ -115,7 +125,7 @@ class GDriveMgrHelper:
                 
 
     def rec_download_files(self, node):
-        """ Builds directory file structure based on the dir_tree """
+        """Helper function to download_files()"""
         for child in node.get_children():
             if child.get_mime() == 'application/vnd.google-apps.folder':
                 try:
@@ -145,14 +155,22 @@ class GDriveMgrHelper:
         os.chdir('../')
 
     def download_files(self):
-        """ Uses dir_tree to create folders and download all files except Google Docs """
+        """ 
+        Uses dir_tree to create folders and download all files except Google Docs.
+        
+        :return: 1 if encountered an OSError, 0 if no errors
+        """
         with open('dir_tree.pickle', 'rb') as f:
             print("loading tree...")
             tree = pickle.load(f)
         
-        root = gdrive.GDRIVE_ROOT_DIR
-        os.chdir(root)
-        self.rec_download_files(tree.get_root())
+        os.chdir(gdrive.GDRIVE_ROOT_DIR)
+
+        try:
+            self.rec_download_files(tree.get_root())
+            return 0
+        except OSError as e:
+            return 1
 
     def update_gdrive_dir_tree(self):
         pass

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+""" Functions for interfacing with Google Drive API """
 
 from __future__ import absolute_import
 
@@ -27,19 +27,21 @@ APPLICATION_NAME = 'Drive API Quickstart'
 # Directories
 HOME_DIR = os.path.expanduser('~')
 GDRIVE_ROOT_DIR = os.path.join(HOME_DIR, 'Google_Drive')
-CREDENTIAL_DIR = os.path.join(HOME_DIR, '.credentials')
+DATA_DIR = os.path.join(HOME_DIR, '.gdrivemgr')
+
 
  
 def get_credentials():
     """Gets valid user credentials from storage.
     If nothing has been stored, or if the stored credentials are invalid,
     the OAuth2 flow is completed to obtain the new credentials.
+
     :return: Returns credentials, the obtained credential via oauth.
     """
     
-    if not os.path.exists(CREDENTIAL_DIR):
-        os.makedirs(CREDENTIAL_DIR)
-    credential_path = os.path.join(CREDENTIAL_DIR, 'credentials.dat')
+    if not os.path.exists(DATA_DIR):
+        os.makedir(DATA_DIR)
+    credential_path = os.path.join(DATA_DIR, 'credentials.dat')
 
     store = oauth2client.file.Storage(credential_path)
     credentials = store.get()
@@ -64,14 +66,6 @@ def print_file_content(service, file_id):
         print(service.files().get_media(fileId=file_id).execute())
     except errors.HttpError, error:
         print "Error %s" % error
-
-def test_download_file(path, file_name):
-    original_path = os.getcwd()
-    print("original path is %s" % original_path)
-    os.chdir(path)
-    print("changing path to %s" % path)
-    os.chdir(original_path)
-    return
 
 def download_file(service, file_id, file_name):
     """
@@ -113,21 +107,30 @@ def download_file(service, file_id, file_name):
             return
 
 def create_service():
+    """Creates Google Drive API oauth service using credential files
+       
+       :return: service object
+    """
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('drive', 'v2', http=http)
     return service
 
 def get_file_metadata(service, file_id):
-    """ queries Drive API to get info about a file """
+    """ queries Drive API to get info about a file 
+        
+        :return: dict of file metadata
+    """
     return  service.files().get(fileId=file_id).execute()
 
 def get_children(service, folder_id):
     """ 
     Gets all children items of a folder from Google Drive
+    
     :param: service = a Google Drive service object
     :param: folder_id = the Google Drive id of a folder. Use "root" to
     get all children items of Google Drive root folder
+    
     :return: Returns a list of children file/folder ids
     """
     page_token = None
@@ -143,7 +146,10 @@ def get_children(service, folder_id):
     return child_id_list
 
 def main():
-    """Shows basic usage of the Google Drive API.
+    """
+    ** For Learning/testing purposes only **
+
+    Shows basic usage of the Google Drive API.
     Creates a Google Drive API service object and outputs the names and IDs
     for up to 10 files.
     """
