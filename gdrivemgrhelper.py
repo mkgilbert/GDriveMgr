@@ -76,10 +76,20 @@ class GDriveMgrHelper:
         
         return files_list
         
-    def create_tree(self, folder_id):
+    def create_tree(self):
         """
         Generate a Tree object using file metadata from all of the files in
-        Google Drive. then save it as a pickled object.
+        Google Drive. then save it as a pickled object inside the data directory.
+        """
+        self._rec_create_tree("root") # Google API uses "root" as id of root folder 
+        # pickle the object to a file so we can reuse it as a template to download files
+        dir_tree_path = os.path.join(gdrive.DATA_DIR, 'dir_tree.pickle')
+        with open(dir_tree_path, 'wb') as f:
+            pickle.dump(self.dir_tree, f)
+        
+    def _rec_create_tree(self, folder_id):
+        """
+        Helper to create directory tree object
 
         :param: folder_id = Google Drive id of a folder
         """
@@ -109,7 +119,7 @@ class GDriveMgrHelper:
                 continue
             elif result == -1:
                 # parent node doesn't exist yet, so go get it
-                self.create_tree(f['parent_id'])
+                self._rec_create_tree(f['parent_id'])
 
             # file is a folder that could have files in it...
             if f['mime'] == 'application/vnd.google-apps.folder':
@@ -119,12 +129,12 @@ class GDriveMgrHelper:
                 print("----------------------------------------")
                 print("")
 
-                self.create_tree(f['id'])  
+                self._rec_create_tree(f['id'])  
   
         return
                 
 
-    def rec_download_files(self, node):
+    def _rec_download_files(self, node):
         """Helper function to download_files()"""
         for child in node.get_children():
             if child.get_mime() == 'application/vnd.google-apps.folder':
@@ -140,7 +150,7 @@ class GDriveMgrHelper:
                     print("Couldn't chdir to '%s'. Skipping download of this directory." % child.get_title())
                     continue
 
-                self.rec_download_files(child)
+                self._rec_download_files(child)
             elif 'vnd.google-apps' in child.get_mime():
                 # file is a "google doc" file and can't be downloaded. Http error 400
                 continue
@@ -167,7 +177,7 @@ class GDriveMgrHelper:
         os.chdir(gdrive.GDRIVE_ROOT_DIR)
 
         try:
-            self.rec_download_files(tree.get_root())
+            self._rec_download_files(tree.get_root())
             return 0
         except OSError as e:
             return 1
