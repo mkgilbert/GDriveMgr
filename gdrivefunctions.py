@@ -29,7 +29,6 @@ HOME_DIR = os.path.expanduser('~')
 GDRIVE_ROOT_DIR = os.path.join(HOME_DIR, 'Google_Drive')
 DATA_DIR = os.path.join(HOME_DIR, '.gdrivemgr')
 
-
  
 def get_credentials():
     """Gets valid user credentials from storage.
@@ -40,7 +39,7 @@ def get_credentials():
     """
     
     if not os.path.exists(DATA_DIR):
-        os.makedir(DATA_DIR)
+        os.mkdir(DATA_DIR)
     credential_path = os.path.join(DATA_DIR, 'credentials.dat')
 
     store = oauth2client.file.Storage(credential_path)
